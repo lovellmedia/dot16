@@ -1,0 +1,139 @@
+---
+import TopicLayout from '../../layouts/TopicLayout.astro';
+import ContentSection from '../../components/ContentSection.astro';
+
+const keyPoints = [
+  "Interactive calculators provide accurate results for common acoustic calculations",
+  "Port length calculator determines proper tuning for vented enclosures",
+  "Box volume calculator accounts for speaker and port displacements",
+  "Wavelength calculator converts between frequency and wavelength",
+  "Decibel sum calculator correctly adds SPL levels"
+];
+
+const topicSlug = "vehicle-acoustic-engineering";
+
+const tools = [
+  { title: "Port Length Calculator", url: "/tools/port-calculator/", description: "Calculate vented enclosure port length for desired tuning frequency" },
+  { title: "Box Volume Calculator", url: "/tools/box-volume/", description: "Determine net enclosure volume accounting for displacements" },
+  { title: "Wavelength Calculator", url: "/tools/wavelength/", description: "Convert audio frequency to wavelength and vice versa" },
+  { title: "Decibel Sum Calculator", url: "/tools/decibel-sum/", description: "Add multiple SPL levels correctly using logarithmic math" },
+];
+---
+
+<TopicLayout 
+  title="Tools & Resources for Vehicle Acoustics - Dot16"
+  description="Interactive calculators and tools for car audio design including port length, box volume, wavelength, and decibel calculators."
+  pillar="Tools & Resources"
+  keyPoints={keyPoints}
+>
+  <h1>Tools & Resources</h1>
+  
+  <ContentSection>
+    <p>
+      Practical application of vehicle acoustic engineering principles requires accurate calculations for enclosure design, system analysis, and installation planning. This page presents interactive tools that implement the mathematical relationships discussed throughout this site, providing accurate results for common calculations without requiring manual computation or specialized software. Each tool includes explanations of the underlying physics and guidance on interpreting results for real-world applications.
+    </p>
+    
+    <p>
+      These calculators run entirely in your browser—no data is sent to any server, and results are available instantly. For complex system design or professional installations, dedicated software such as LEAP, WinISD, or BassBox Pro may be appropriate, but the tools provided here handle the most common calculations needed for typical vehicle audio projects. For theoretical background on the calculations implemented in these tools, refer to the <a href={`/${topicSlug}/technical-deep-dive/`}>Technical Deep-Dive</a> page.
+    </p>
+  </ContentSection>
+
+  <ContentSection title="Interactive Calculators">
+    <div class="tools-grid">
+      {tools.map((tool) => (
+        <a href={tool.url} class="tool-card">
+          <h3>{tool.title}</h3>
+          <p>{tool.description}</p>
+          <span class="tool-link">Open Calculator →</span>
+        </a>
+      ))}
+    </div>
+  </ContentSection>
+
+  <ContentSection title="Additional Resources">
+    <h3>Reference Materials</h3>
+    <ul>
+      <li><strong>Loudspeaker Design Cookbook</strong> by Vance Dickason - The definitive reference for loudspeaker design including enclosure calculations</li>
+      <li><strong>The Audio Expert</strong> by Ethan Winer - Comprehensive coverage of audio principles including acoustics and measurements</li>
+      <li><strong>Sound System Engineering</strong> by Don and Carolyn Davis - Professional audio engineering reference</li>
+      <li><strong>Master Handbook of Acoustics</strong> by F. Alton Everest - Broad coverage of acoustics principles</li>
+    </ul>
+    
+    <h3>Measurement Tools</h3>
+    <ul>
+      <li><strong>REW (Room EQ Wizard)</strong> - Free room acoustics and loudspeaker measurement software</li>
+      <li><strong>TrueRTA</strong> - Real-time analyzer for system measurements</li>
+      <li><strong>SMAART</strong> - Professional live sound and system optimization software</li>
+      <li><strong>Dayton Audio iMM-6</strong> - Calibrated measurement microphone for smartphone use</li>
+    </ul>
+    
+    <h3>Online Communities</h3>
+    <ul>
+      <li><strong>DIYMA (DIY Mobile Audio)</strong> - Technical discussion forum for car audio</li>
+      <li><strong>Audio Science Review</strong> - Objective measurements and discussions</li>
+      <li><strong>Reddit r/CarAV</strong> - Community for car audio enthusiasts</li>
+      <li><strong>Audio Engineering Society</strong> - Professional organization with technical papers</li>
+    </ul>
+  </ContentSection>
+
+  <ContentSection title="Educational Resources">
+    <p>
+      For those seeking deeper understanding of the principles underlying these calculations, numerous educational resources are available. The <a href="https://en.wikipedia.org/wiki/Acoustics" target="_blank" rel="noopener noreferrer">Wikipedia article on Acoustics</a> provides a solid overview of fundamental concepts. The <a href="https://en.wikipedia.org/wiki/Loudspeaker" target="_blank" rel="noopener noreferrer">Loudspeaker article</a> covers transducer basics, while the <a href="https://en.wikipedia.org/wiki/Room_acoustics" target="_blank" rel="noopener noreferrer">Room Acoustics article</a> addresses the behavior of sound in enclosed spaces.
+    </p>
+    
+    <p>
+      For more structured learning, online courses in acoustics and audio engineering are available through platforms like Coursera, edX, and Khan Academy. University programs in acoustics, audio engineering, and electrical engineering provide comprehensive professional training. The Audio Engineering Society (AES) publishes technical papers and hosts conferences where the latest research in vehicle audio is presented.
+    </p>
+  </ContentSection>
+</TopicLayout>
+
+<style>
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .tool-card {
+    background: #f8f7f5;
+    padding: 2rem;
+    border: 1px solid #e8e6e0;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: block;
+  }
+
+  .tool-card:hover {
+    background: #f0efed;
+    border-color: #d4d0c8;
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
+
+  .tool-card h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 0.75rem;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  .tool-card p {
+    color: #5a5a5a;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .tool-link {
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    color: #2b5a8c;
+    font-weight: 600;
+  }
+
+  .tool-card:hover .tool-link {
+    color: #1a3a5c;
+  }
+</style>

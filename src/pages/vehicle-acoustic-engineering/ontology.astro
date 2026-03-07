@@ -1,0 +1,287 @@
+---
+import TopicLayout from '../../layouts/TopicLayout.astro';
+import ContentSection from '../../components/ContentSection.astro';
+
+const keyPoints = [
+  "Standardized terminology enables precise communication among audio professionals",
+  "Thiele-Small parameters quantify speaker driver behavior in mathematical terms",
+  "Crossover alignments (Butterworth, Linkwitz-Riley, Bessel) define filter characteristics",
+  "Acoustic measurements use specific metrics: SPL, dB, THD, RT60, and more",
+  "Understanding units and conversions is essential for accurate calculations"
+];
+
+const topicSlug = "vehicle-acoustic-engineering";
+---
+
+<TopicLayout 
+  title="Vehicle Acoustics Ontology & Knowledge Base - Dot16"
+  description="Comprehensive glossary and knowledge base of vehicle acoustic engineering terminology, definitions, and taxonomy of acoustic concepts."
+  pillar="Ontology & Knowledge Base"
+  keyPoints={keyPoints}
+>
+  <h1>Ontology & Knowledge Base</h1>
+  
+  <ContentSection>
+    <p>
+      Effective communication in vehicle acoustic engineering requires precise, standardized terminology. This knowledge base provides comprehensive definitions of the terms, parameters, and concepts essential to understanding and discussing vehicle audio systems. Whether you are reading technical literature, communicating with fellow enthusiasts, or researching system upgrades, the definitions presented here establish a common vocabulary for discussing the physics and engineering of sound in automotive environments. The <a href={`/${topicSlug}/`}>Overview</a> and <a href={`/${topicSlug}/technical-deep-dive/`}>Technical Deep-Dive</a> pages use these terms extensively; this ontology ensures consistent understanding of their meanings.
+    </p>
+  </ContentSection>
+
+  <ContentSection title="Fundamental Acoustic Terms">
+    <h3>Sound Pressure Level (SPL)</h3>
+    <p>
+      Sound Pressure Level measures the intensity of sound relative to a reference pressure, expressed in decibels (dB). The reference pressure for airborne sound is 20 micropascals (μPa), approximately the threshold of human hearing at 1 kHz. SPL is calculated as: SPL = 20 × log₁₀(p/p₀), where p is the measured sound pressure and p₀ is the reference pressure. A doubling of pressure corresponds to a 6 dB increase in SPL. Typical vehicle audio systems produce SPL in the range of 80-110 dB at listening positions, while competition systems may exceed 150 dB.
+    </p>
+    
+    <h3>Decibel (dB)</h3>
+    <p>
+      The decibel is a logarithmic unit used to express ratios of power, intensity, or amplitude. In acoustics, decibels allow convenient expression of the wide range of sound intensities encountered in practice. Because the scale is logarithmic, decibels do not add linearly: combining two equal sound sources produces a 3 dB increase, not a doubling. A 10 dB increase is perceived as approximately twice as loud, while a 3 dB change is the smallest difference reliably detectable by listeners under controlled conditions. The decibel-sum calculator in our <a href={`/${topicSlug}/tools/`}>Tools & Resources</a> section handles these calculations.
+    </p>
+    
+    <h3>Frequency (f)</h3>
+    <p>
+      Frequency measures the number of complete cycles of a sound wave per second, expressed in Hertz (Hz). The audible frequency range for humans is generally considered 20 Hz to 20,000 Hz (20 kHz), though individual hearing varies substantially, particularly at high frequencies with age. Musical pitch corresponds to frequency, with each octave representing a doubling of frequency (e.g., A3 = 220 Hz, A4 = 440 Hz, A5 = 880 Hz). Vehicle audio systems must accurately reproduce frequencies from approximately 30 Hz (lowest organ notes, synthesized bass) to 20 kHz (upper harmonics, "air" in recordings).
+    </p>
+    
+    <h3>Wavelength (λ)</h3>
+    <p>
+      Wavelength is the spatial distance between corresponding points of successive cycles of a sound wave, related to frequency and the speed of sound by: λ = c/f, where c is the speed of sound (approximately 343 m/s or 1125 ft/s at 20°C). At 20 Hz, wavelength is approximately 17 meters (56 feet); at 20 kHz, it is 1.7 cm (0.68 inches). When wavelength exceeds the dimensions of an enclosure, wave behavior transitions to pressure-field behavior, producing boundary gain. The wavelength calculator in our <a href="/tools/wavelength/">Tools section</a> computes these relationships.
+    </p>
+    
+    <h3>Speed of Sound (c)</h3>
+    <p>
+      The speed of sound in air depends on temperature according to: c = 331.3 + (0.606 × T) m/s, where T is temperature in Celsius. At 20°C, c ≈ 343 m/s (1125 ft/s). The speed increases with temperature because warmer air is less dense. Humidity has a smaller effect, slightly increasing speed at higher humidity levels. In vehicle acoustics, temperature variations affect modal frequencies (since f = c/2L) and wavelength calculations, though these effects are typically minor over normal operating temperature ranges.
+    </p>
+  </ContentSection>
+
+  <ContentSection title="Thiele-Small Parameters">
+    <p>
+      Thiele-Small parameters are a set of electromechanical specifications that completely characterize the low-frequency behavior of a loudspeaker driver. Developed by A. Neville Thiele and Richard Small in the 1960s-70s, these parameters enable mathematical prediction of driver behavior in various enclosure types.
+    </p>
+    
+    <h3>Fs (Resonant Frequency)</h3>
+    <p>
+      The free-air resonant frequency of the driver, measured in Hz. This is the frequency at which the driver naturally resonates when suspended in free air (no enclosure). Below Fs, output rolls off; above Fs, the driver operates in its piston range. Lower Fs generally indicates better low-frequency capability.
+    </p>
+    
+    <h3>Qts (Total Q)</h3>
+    <p>
+      The total quality factor of the driver, combining electrical (Qes) and mechanical (Qms) damping. Qts determines the shape of the resonance peak and influences optimal enclosure alignment. Typical values range from 0.2 to 0.5; lower Qts indicates more damping and requires larger enclosures, while higher Qts works better in smaller sealed boxes but may exhibit peaking.
+    </p>
+    
+    <h3>Vas (Equivalent Compliance Volume)</h3>
+    <p>
+      The volume of air that has the same acoustic compliance (springiness) as the driver's suspension, measured in liters or cubic feet. Larger Vas indicates a looser, more compliant suspension that requires larger enclosures. Vas is determined by the stiffness of the spider and surround, combined with the cone area.
+    </p>
+    
+    <h3>Xmax (Maximum Linear Excursion)</h3>
+    <p>
+      The maximum peak linear excursion of the voice coil in the magnetic gap, measured in millimeters. Beyond Xmax, the voice coil leaves the region of uniform magnetic field, producing distortion. Xmax helps predict maximum clean output: larger Xmax allows higher SPL, particularly at low frequencies where more excursion is required.
+    </p>
+    
+    <h3>Sd (Effective Piston Area)</h3>
+    <p>
+      The effective radiating area of the cone, measured in square centimeters or square inches. Sd determines how much air the driver moves for a given excursion (volume displacement = Sd × excursion). Larger Sd provides greater output potential but requires larger enclosures.
+    </p>
+    
+    <h3>BL Product</h3>
+    <p>
+      The product of magnetic flux density (B) and voice coil conductor length (L), measured in Tesla-meters. BL represents the motor strength of the driver; higher BL indicates a stronger motor that provides better control over the cone motion. BL affects Qes and efficiency.
+    </p>
+    
+    <h3>Re (DC Resistance)</h3>
+    <p>
+      The DC resistance of the voice coil, measured in ohms. This is typically slightly lower than the nominal impedance rating (e.g., a "4 ohm" driver usually has Re ≈ 3.4 ohms). Re is used in power calculations and amplifier matching.
+    </p>
+    
+    <h3>SPL (Sensitivity)</h3>
+    <p>
+      The sound pressure level produced by the driver at 1 meter distance with 1 watt input power (or 2.83V, which equals 1W at 8 ohms), measured in dB. Higher sensitivity indicates greater efficiency. Typical values range from 85 dB to 95 dB; every 3 dB increase represents doubled efficiency.
+    </p>
+  </ContentSection>
+
+  <ContentSection title="Enclosure Terminology">
+    <h3>Sealed (Acoustic Suspension) Enclosure</h3>
+    <p>
+      An enclosure type where the driver operates in a sealed, airtight box. The trapped air acts as a spring (acoustic suspension) that dominates the driver's compliance when the box is small relative to Vas. Sealed enclosures have gradual 12 dB/octave roll-off below resonance, low group delay, and excellent transient response. They are forgiving of calculation errors and work well with high-excursion drivers.
+    </p>
+    
+    <h3>Vented (Bass Reflex) Enclosure</h3>
+    <p>
+      An enclosure with a port or vent that tunes the box to a specific frequency (Fb). At resonance, the port radiation reinforces the woofer output, extending bass response and increasing efficiency compared to sealed boxes. Below tuning, output drops rapidly at 24 dB/octave. Ported enclosures require more precise design and are sensitive to calculation errors. See our <a href="/tools/port-calculator/">Port Length Calculator</a>.
+    </p>
+    
+    <h3>Net vs. Gross Volume</h3>
+    <p>
+      Gross volume is the total internal volume of the enclosure; net volume is the volume remaining after subtracting the space occupied by the driver, port, and internal bracing. Net volume (Vb) is the parameter used in enclosure calculations. Displacement of typical 12-inch subwoofers ranges from 0.1 to 0.3 cubic feet; port displacement depends on diameter and length.
+    </p>
+    
+    <h3>Qtc (System Q)</h3>
+    <p>
+      The total Q of a driver in a sealed enclosure at resonance. Qtc determines the shape of the frequency response: Qtc = 0.5 provides critically damped response (no peak, fastest settling); Qtc = 0.707 (Butterworth) provides maximally flat response; Qtc = 1.0 provides 3 dB peak at resonance. Higher Qtc produces more output near resonance but poorer transient response.
+    </p>
+    
+    <h3>Fb (Box Tuning Frequency)</h3>
+    <p>
+      The resonant frequency of a ported enclosure, determined by box volume and port dimensions. At Fb, the port and woofer are in resonance, producing maximum output. Tuning frequency is chosen based on driver parameters and desired response: lower Fb extends bass but reduces maximum output; higher Fb increases output near tuning but causes faster roll-off below.
+    </p>
+  </ContentSection>
+
+  <ContentSection title="Crossover and Filter Terms">
+    <h3>Crossover</h3>
+    <p>
+      An electronic or acoustic filter network that divides the audio spectrum between multiple drivers, ensuring each operates only in its optimal frequency range. Active crossovers operate on line-level signals before amplification; passive crossovers operate on speaker-level signals after amplification. Crossover frequency (Fc) is the -3 dB point of the filter.
+    </p>
+    
+    <h3>Filter Slope</h3>
+    <p>
+      The rate at which a filter attenuates signals beyond the cutoff frequency, expressed in dB per octave. Common slopes are 6 dB/octave (first-order), 12 dB/octave (second-order), 18 dB/octave (third-order), and 24 dB/octave (fourth-order). Steeper slopes provide better driver protection and reduced overlap but introduce more phase shift.
+    </p>
+    
+    <h3>Butterworth Alignment</h3>
+    <p>
+      A filter alignment that provides maximally flat magnitude response in the passband. Second-order Butterworth has Q = 0.707 and 12 dB/octave slope; fourth-order has 24 dB/octave slope. Butterworth filters have moderate phase shift and good time-domain performance.
+    </p>
+    
+    <h3>Linkwitz-Riley Alignment</h3>
+    <p>
+      A fourth-order alignment created by cascading two second-order Butterworth filters, resulting in 24 dB/octave slope. Linkwitz-Riley crossovers sum flat when acoustic centers are aligned (in-phase) and are the most common choice for active systems. They have Q = 0.49 and gentle roll-off characteristics.
+    </p>
+    
+    <h3>Bessel Alignment</h3>
+    <p>
+      A filter alignment optimized for linear phase response and minimal group delay (maximally flat delay). Bessel filters sacrifice some magnitude flatness for superior time-domain performance, making them suitable for applications where transient response is critical. They have gentle roll-off compared to Butterworth.
+    </p>
+  </ContentSection>
+
+  <ContentSection title="Measurement and Analysis Terms">
+    <h3>Frequency Response</h3>
+    <p>
+      A measurement showing the magnitude of output across the frequency spectrum, typically expressed in dB SPL versus frequency in Hz. Flat frequency response indicates equal output at all frequencies. Vehicle audio systems rarely measure flat due to cabin effects; target response curves often include gentle bass elevation and high-frequency roll-off.
+    </p>
+    
+    <h3>Total Harmonic Distortion (THD)</h3>
+    <p>
+      A measure of nonlinear distortion expressed as the ratio of harmonic energy to fundamental energy, in percent or dB. THD increases with output level as drivers and amplifiers approach their limits. For subwoofers, THD below 5% is generally inaudible; for midranges and tweeters, lower THD is required for transparent reproduction.
+    </p>
+    
+    <h3>RTA (Real Time Analyzer)</h3>
+    <p>
+      An instrument that displays frequency content in real time using a bank of bandpass filters or FFT analysis. RTAs typically show 1/3-octave or 1/6-octave resolution. Pink noise (equal energy per octave) is the standard stimulus for RTA measurements. See our <a href="/tools/rta-analyzer/">RTA Tool</a>.
+    </p>
+    
+    <h3>Impulse Response</h3>
+    <p>
+      The output of a system when stimulated by an impulse (theoretically instantaneous, practically a very short click). The impulse response completely characterizes a linear time-invariant system and can be transformed to frequency response via FFT. Impulse response reveals time-domain behavior including ringing and reflections.
+    </p>
+    
+    <h3>Group Delay</h3>
+    <p>
+      The derivative of phase with respect to frequency, expressed in milliseconds. Group delay represents the time delay of the envelope of a signal at each frequency. Flat group delay indicates all frequencies arrive simultaneously; peaks indicate frequencies that are delayed (ringing). High group delay in bass frequencies can make transients sound "slow" or "boomy."
+    </p>
+    
+    <h3>Transfer Function</h3>
+    <p>
+      The frequency-domain ratio of output to input for a system. In vehicle acoustics, the transfer function describes how the cabin modifies the response of a speaker system. It includes both magnitude (frequency response) and phase information. See the <a href={`/${topicSlug}/technical-deep-dive/`}>Technical Deep-Dive</a> for mathematical details.
+    </p>
+  </ContentSection>
+
+  <ContentSection title="Vehicle-Specific Terms">
+    <h3>Cabin Gain (Boundary Gain)</h3>
+    <p>
+      The natural amplification of low frequencies in a small enclosure due to pressure-field behavior when wavelength exceeds enclosure dimensions. Cabin gain increases at approximately 12 dB/octave below the transition frequency (typically 60-100 Hz in vehicles). This phenomenon extends effective bass response beyond what would be predicted from anechoic measurements.
+    </p>
+    
+    <h3>Transfer Function</h3>
+    <p>
+      In vehicle acoustics, specifically the frequency response characteristic imposed by the vehicle cabin on a speaker system. The transfer function varies with listening position and is determined by cabin dimensions, speaker location, and interior materials. Flattening the transfer function through EQ is a primary goal of system tuning.
+    </p>
+    
+    <h3>Time Alignment (Signal Delay)</h3>
+    <p>
+      The application of electronic delay to individual speaker channels to synchronize arrival times at the listening position. Proper time alignment compensates for path length differences between speakers and listeners, restoring proper stereo imaging and phase coherence at crossover frequencies.
+    </p>
+    
+    <h3>Active Noise Cancellation (ANC)</h3>
+    <p>
+      A system that reduces ambient noise by generating anti-phase sound through the audio system. ANC uses microphones to sample cabin noise and DSP to generate canceling waveforms. It is particularly effective for low-frequency, repetitive noise such as engine and road drone.
+    </p>
+    
+    <h3>Sound Deadening</h3>
+    <p>
+      Materials applied to vehicle panels to reduce vibration and noise transmission. CLD (constrained layer damping) materials reduce panel resonance; MLV (mass loaded vinyl) blocks airborne sound transmission. Sound deadening reduces road noise and improves audio clarity by reducing competing noise and panel vibration.
+    </p>
+  </ContentSection>
+
+  <ContentSection title="Units and Conversions">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th>SI Unit</th>
+          <th>Imperial Unit</th>
+          <th>Conversion</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Length</td>
+          <td>meter (m)</td>
+          <td>foot (ft)</td>
+          <td>1 m = 3.281 ft</td>
+        </tr>
+        <tr>
+          <td>Volume</td>
+          <td>liter (L)</td>
+          <td>cubic foot (ft³)</td>
+          <td>1 ft³ = 28.32 L</td>
+        </tr>
+        <tr>
+          <td>Frequency</td>
+          <td>Hertz (Hz)</td>
+          <td>Hertz (Hz)</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Pressure</td>
+          <td>Pascal (Pa)</td>
+          <td>—</td>
+          <td>Reference: 20 μPa</td>
+        </tr>
+        <tr>
+          <td>Power</td>
+          <td>Watt (W)</td>
+          <td>Watt (W)</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Voltage</td>
+          <td>Volt (V)</td>
+          <td>Volt (V)</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Resistance</td>
+          <td>Ohm (Ω)</td>
+          <td>Ohm (Ω)</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Temperature</td>
+          <td>Celsius (°C)</td>
+          <td>Fahrenheit (°F)</td>
+          <td>°F = (°C × 9/5) + 32</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      <strong>Useful Constants:</strong><br>
+      Speed of sound at 20°C: c = 343 m/s = 1125 ft/s<br>
+      Reference SPL: 0 dB SPL = 20 μPa<br>
+      Reference power: 0 dBW = 1 W; 0 dBm = 1 mW<br>
+      π (pi) ≈ 3.14159<br>
+      Golden ratio (φ) ≈ 1.618
+    </p>
+  </ContentSection>
+</TopicLayout>

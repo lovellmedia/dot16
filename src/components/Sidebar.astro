@@ -1,0 +1,124 @@
+---
+export interface Props {
+  relatedTopics?: Array<{ title: string; url: string }>;
+  keyPoints?: string[];
+}
+
+const { relatedTopics = [], keyPoints = [] } = Astro.props;
+const topicSlug = "vehicle-acoustic-engineering";
+
+const defaultRelatedTopics = [
+  { title: "Overview", url: `/${topicSlug}/` },
+  { title: "History & Evolution", url: `/${topicSlug}/history/` },
+  { title: "Technical Deep-Dive", url: `/${topicSlug}/technical-deep-dive/` },
+  { title: "Ontology & Knowledge Base", url: `/${topicSlug}/ontology/` },
+  { title: "Current Trends", url: `/${topicSlug}/trends/` },
+  { title: "Tools & Resources", url: `/${topicSlug}/tools/` },
+  { title: "Challenges & Solutions", url: `/${topicSlug}/challenges/` },
+];
+
+const topics = relatedTopics.length > 0 ? relatedTopics : defaultRelatedTopics;
+---
+
+<aside class="sidebar">
+  <div class="sidebar-box">
+    <h4>Pillar Pages</h4>
+    <ul>
+      {topics.map((topic) => (
+        <li><a href={topic.url}>{topic.title}</a></li>
+      ))}
+    </ul>
+  </div>
+
+  {keyPoints.length > 0 && (
+    <div class="sidebar-box">
+      <h4>Key Points</h4>
+      <ul class="key-points">
+        {keyPoints.map((point) => (
+          <li>{point}</li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  <div class="sidebar-box">
+    <h4>Interactive Tools</h4>
+    <ul>
+      <li><a href="/tools/port-calculator/">Port Length Calculator</a></li>
+      <li><a href="/tools/box-volume/">Box Volume Calculator</a></li>
+      <li><a href="/tools/wavelength/">Wavelength Calculator</a></li>
+      <li><a href="/tools/decibel-sum/">Decibel Sum Calculator</a></li>
+    </ul>
+  </div>
+</aside>
+
+<style>
+  .sidebar {
+    position: sticky;
+    top: 2rem;
+  }
+
+  .sidebar-box {
+    background: #f8f7f5;
+    padding: 2rem;
+    border: 1px solid #e8e6e0;
+    margin-bottom: 2rem;
+  }
+
+  .sidebar-box h4 {
+    font-family: 'Lato', sans-serif;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #2b2b2b;
+    margin-bottom: 1.25rem;
+    font-weight: 700;
+  }
+
+  .sidebar-box ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .sidebar-box li {
+    padding: 0.75rem 0;
+    color: #5a5a5a;
+    font-size: 1rem;
+    border-bottom: 1px solid #e8e6e0;
+  }
+
+  .sidebar-box li:last-child {
+    border-bottom: none;
+  }
+
+  .sidebar-box a {
+    color: #2b5a8c;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .sidebar-box a:hover {
+    color: #1a3a5c;
+    text-decoration: underline;
+  }
+
+  .key-points li {
+    position: relative;
+    padding-left: 1.5rem;
+  }
+
+  .key-points li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #2b2b2b;
+  }
+
+  @media (max-width: 968px) {
+    .sidebar {
+      position: relative;
+      top: 0;
+      margin-top: 3rem;
+    }
+  }
+</style>

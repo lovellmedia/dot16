@@ -1,0 +1,354 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const topicSlug = "vehicle-acoustic-engineering";
+const pillarPages = [
+  { title: "Overview", url: `/${topicSlug}/`, description: "Introduction to vehicle acoustic engineering principles" },
+  { title: "History & Evolution", url: `/${topicSlug}/history/`, description: "The evolution of car audio and acoustics" },
+  { title: "Technical Deep-Dive", url: `/${topicSlug}/technical-deep-dive/`, description: "Advanced acoustic theory and physics" },
+  { title: "Ontology", url: `/${topicSlug}/ontology/`, description: "Knowledge base of acoustic terminology" },
+  { title: "Current Trends", url: `/${topicSlug}/trends/`, description: "Emerging technologies and future outlook" },
+  { title: "Tools & Resources", url: `/${topicSlug}/tools/`, description: "Interactive calculators and guides" },
+  { title: "Challenges", url: `/${topicSlug}/challenges/`, description: "Common problems and solutions" },
+];
+
+const tools = [
+  { title: "Port Length Calculator", url: "/tools/port-calculator/", description: "Calculate subwoofer port dimensions" },
+  { title: "Box Volume Calculator", url: "/tools/box-volume/", description: "Determine enclosure volumes with displacements" },
+  { title: "Wavelength Calculator", url: "/tools/wavelength/", description: "Convert frequency to wavelength" },
+  { title: "Decibel Sum Calculator", url: "/tools/decibel-sum/", description: "Add SPL levels correctly" },
+];
+---
+
+<BaseLayout 
+  title="Dot16 - Vehicle Acoustic Engineering" 
+  description="Technical research and resources for vehicle acoustic engineering, car audio science, and automotive sound system optimization."
+>
+  <Header slot="header" title="Dot16" />
+  
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-label">Technical Research Resource</div>
+      <h1>Vehicle Acoustic Engineering</h1>
+      <p class="hero-subtitle">The Science of Sound in Automotive Environments</p>
+      <p class="hero-description">
+        Exploring the physics, principles, and practical applications of acoustics in vehicle audio systems. 
+        From cabin gain to standing waves, discover how sound behaves differently in cars than in any other environment.
+      </p>
+      <a href={`/${topicSlug}/`} class="hero-cta">Explore the Research</a>
+    </div>
+  </section>
+
+  <!-- Pillar Pages Section -->
+  <section class="pillars">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-number">Research Areas</div>
+        <h2 class="section-title">Seven Pillars of Vehicle Acoustics</h2>
+        <p class="section-description">Comprehensive coverage of vehicle acoustic engineering through seven interconnected research areas.</p>
+      </div>
+      
+      <div class="pillar-grid">
+        {pillarPages.map((pillar, index) => (
+          <a href={pillar.url} class="pillar-card">
+            <div class="pillar-number">{String(index + 1).padStart(2, '0')}</div>
+            <h3>{pillar.title}</h3>
+            <p>{pillar.description}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Tools Section -->
+  <section class="tools">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-number">Interactive Tools</div>
+        <h2 class="section-title">Acoustic Calculators</h2>
+        <p class="section-description">Free online tools for car audio design and acoustic calculations.</p>
+      </div>
+      
+      <div class="tools-grid">
+        {tools.map((tool) => (
+          <a href={tool.url} class="tool-card">
+            <h3>{tool.title}</h3>
+            <p>{tool.description}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="about">
+    <div class="container">
+      <div class="about-content">
+        <h2>About This Research</h2>
+        <p>
+          Vehicle acoustic engineering represents a specialized field at the intersection of physics, audio engineering, and automotive design. 
+          Unlike home audio systems that operate in relatively controlled environments, car audio must contend with unique challenges: 
+          irregular cabin shapes, road noise, engine vibration, and limited mounting locations.
+        </p>
+        <p>
+          This resource provides in-depth technical coverage of how sound behaves in automotive environments, 
+          offering both theoretical foundations and practical guidance for enthusiasts and professionals alike. 
+          All content is researched and written to provide actionable insights backed by acoustic science.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</BaseLayout>
+
+<style>
+  /* Hero Section */
+  .hero {
+    background: #ffffff;
+    padding: 5rem 3rem;
+    border-bottom: 1px solid #e8e6e0;
+    text-align: center;
+  }
+
+  .hero .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .hero-label {
+    font-family: 'Lato', sans-serif;
+    font-size: 0.75rem;
+    color: #8a8a8a;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero h1 {
+    font-size: 3.25rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  .hero-subtitle {
+    font-size: 1.5rem;
+    color: #5a5a5a;
+    font-weight: 400;
+    font-style: italic;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-description {
+    font-size: 1.15rem;
+    color: #4a4a4a;
+    margin-bottom: 2.5rem;
+    line-height: 1.7;
+  }
+
+  .hero-cta {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    background: #2b2b2b;
+    color: #ffffff;
+    text-decoration: none;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: background 0.2s;
+  }
+
+  .hero-cta:hover {
+    background: #4a4a4a;
+    text-decoration: none;
+  }
+
+  /* Section Headers */
+  section {
+    padding: 4.5rem 3rem;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .section-number {
+    font-family: 'Lato', sans-serif;
+    font-size: 0.8rem;
+    color: #a8a8a8;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 1.5rem;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  .section-description {
+    font-size: 1.2rem;
+    color: #5a5a5a;
+    max-width: 650px;
+    margin: 0 auto;
+    font-style: italic;
+  }
+
+  /* Pillar Grid */
+  .pillars {
+    background: #fdfcfa;
+  }
+
+  .pillar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+
+  .pillar-card {
+    background: #ffffff;
+    padding: 2.5rem;
+    border: 1px solid #e8e6e0;
+    text-decoration: none;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+
+  .pillar-card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
+
+  .pillar-number {
+    font-family: 'Lato', sans-serif;
+    font-size: 0.8rem;
+    color: #a8a8a8;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .pillar-card h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  .pillar-card p {
+    color: #5a5a5a;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Tools Section */
+  .tools {
+    background: #ffffff;
+    border-top: 1px solid #e8e6e0;
+    border-bottom: 1px solid #e8e6e0;
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .tool-card {
+    background: #f8f7f5;
+    padding: 2rem;
+    border: 1px solid #e8e6e0;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .tool-card:hover {
+    background: #f0efed;
+    text-decoration: none;
+  }
+
+  .tool-card h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 0.75rem;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  .tool-card p {
+    color: #5a5a5a;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* About Section */
+  .about {
+    background: #f8f7f5;
+  }
+
+  .about-content {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .about-content h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 1.5rem;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  .about-content p {
+    font-size: 1.1rem;
+    color: #4a4a4a;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero {
+      padding: 3rem 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: 2rem;
+    }
+
+    section {
+      padding: 3rem 1.5rem;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+    }
+
+    .pillar-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .tools-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

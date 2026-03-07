@@ -1,0 +1,452 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<BaseLayout 
+  title="Decibel Sum Calculator - Dot16"
+  description="Add multiple SPL (sound pressure level) values correctly using logarithmic mathematics."
+>
+  <Header slot="header" title="Dot16" />
+  
+  <section class="tool-page">
+    <div class="container">
+      <h1>Decibel Sum Calculator</h1>
+      <p class="intro">
+        Add multiple SPL (sound pressure level) values correctly. Decibels are logarithmic units, 
+        so they cannot be added arithmetically. This calculator performs the correct logarithmic addition 
+        for combining sound sources.
+      </p>
+
+      <div class="calculator">
+        <div class="input-list" id="inputList">
+          <div class="input-row">
+            <label>Source 1:</label>
+            <div class="input-with-unit">
+              <input type="number" class="spl-input" step="0.1" placeholder="85" value="85">
+              <span class="unit">dB</span>
+            </div>
+          </div>
+          <div class="input-row">
+            <label>Source 2:</label>
+            <div class="input-with-unit">
+              <input type="number" class="spl-input" step="0.1" placeholder="85" value="85">
+              <span class="unit">dB</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button onclick="addInput()" class="add-btn">+ Add Source</button>
+          <button onclick="removeInput()" class="remove-btn">- Remove Source</button>
+        </div>
+
+        <button onclick="calculate()" class="calculate-btn">Calculate Total SPL</button>
+
+        <div id="results" class="results hidden">
+          <h3>Result</h3>
+          <div class="result-highlight">
+            <span class="result-label">Total SPL:</span>
+            <span class="result-value" id="totalSPL">-</span>
+          </div>
+          <div class="calculation-detail" id="calcDetail"></div>
+        </div>
+      </div>
+
+      <div class="quick-reference">
+        <h3>Quick Reference Table</h3>
+        <p>When combining two equal sound sources:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Level Difference</th>
+              <th>Add to Higher Level</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>0 dB (equal levels)</td><td>+3.0 dB</td></tr>
+            <tr><td>1 dB difference</td><td>+2.5 dB</td></tr>
+            <tr><td>2 dB difference</td><td>+2.1 dB</td></tr>
+            <tr><td>3 dB difference</td><td>+1.8 dB</td></tr>
+            <tr><td>4 dB difference</td><td>+1.5 dB</td></tr>
+            <tr><td>5 dB difference</td><td>+1.2 dB</td></tr>
+            <tr><td>6 dB difference</td><td>+1.0 dB</td></tr>
+            <tr><td>7 dB difference</td><td>+0.8 dB</td></tr>
+            <tr><td>8 dB difference</td><td>+0.6 dB</td></tr>
+            <tr><td>9 dB difference</td><td>+0.5 dB</td></tr>
+            <tr><td>10+ dB difference</td><td>+0.4 dB or less</td></tr>
+          </tbody>
+        </table>
+        <p class="note">When two levels differ by 10 dB or more, the lower level has negligible contribution to the total.</p>
+      </div>
+
+      <div class="formula-info">
+        <h3>Formula</h3>
+        <p>To add decibels, convert each dB value to intensity (power), sum the intensities, then convert back to dB:</p>
+        <code>Ltotal = 10 × log₁₀(10^(L1/10) + 10^(L2/10) + ... + 10^(Ln/10))</code>
+        <p>Where L1, L2, ... Ln are the individual sound pressure levels in dB.</p>
+        <p class="warning">Important: This calculation assumes the sound sources are uncorrelated (random phase). 
+        If sources are coherent (same phase), the result can be up to 6 dB higher for two equal sources.</p>
+      </div>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</BaseLayout>
+
+<script is:inline>
+  let inputCount = 2;
+
+  function addInput() {
+    inputCount++;
+    const inputList = document.getElementById('inputList');
+    const newRow = document.createElement('div');
+    newRow.className = 'input-row';
+    newRow.innerHTML = `
+      <label>Source ${inputCount}:</label>
+      <div class="input-with-unit">
+        <input type="number" class="spl-input" step="0.1" placeholder="85">
+        <span class="unit">dB</span>
+      </div>
+    `;
+    inputList.appendChild(newRow);
+    document.getElementById('results').classList.add('hidden');
+  }
+
+  function removeInput() {
+    if (inputCount > 1) {
+      const inputList = document.getElementById('inputList');
+      inputList.removeChild(inputList.lastElementChild);
+      inputCount--;
+      document.getElementById('results').classList.add('hidden');
+    }
+  }
+
+  function calculate() {
+    const inputs = document.querySelectorAll('.spl-input');
+    const values = [];
+    
+    inputs.forEach(input => {
+      const val = parseFloat(input.value);
+      if (!isNaN(val)) {
+        values.push(val);
+      }
+    });
+
+    if (values.length === 0) {
+      alert('Please enter at least one SPL value');
+      return;
+    }
+
+    // Convert dB to intensity, sum, convert back to dB
+    let totalIntensity = 0;
+    values.forEach(val => {
+      totalIntensity += Math.pow(10, val / 10);
+    });
+    
+    const totalSPL = 10 * Math.log10(totalIntensity);
+    const maxSPL = Math.max(...values);
+    const increase = totalSPL - maxSPL;
+
+    // Display results
+    document.getElementById('totalSPL').innerHTML = `${totalSPL.toFixed(1)} dB`;
+    
+    let detailText = `<p>Combined ${values.length} sources ranging from ${Math.min(...values).toFixed(1)} dB to ${maxSPL.toFixed(1)} dB.</p>`;
+    detailText += `<p>The combined level is <strong>${increase.toFixed(1)} dB</strong> above the loudest individual source.</p>`;
+    
+    if (values.length === 2 && Math.abs(values[0] - values[1]) < 0.1) {
+      detailText += `<p>Two equal sources combine to be 3 dB louder than either source alone.</p>`;
+    }
+    
+    document.getElementById('calcDetail').innerHTML = detailText;
+    document.getElementById('results').classList.remove('hidden');
+  }
+</script>
+
+<style>
+  .tool-page {
+    padding: 3rem;
+    background: #fdfcfa;
+    min-height: calc(100vh - 200px);
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  .intro {
+    font-size: 1.1rem;
+    color: #5a5a5a;
+    margin-bottom: 2rem;
+    line-height: 1.7;
+  }
+
+  .calculator {
+    background: #ffffff;
+    padding: 2.5rem;
+    border: 1px solid #e8e6e0;
+    margin-bottom: 2rem;
+  }
+
+  .input-list {
+    margin-bottom: 1rem;
+  }
+
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .input-row label {
+    min-width: 90px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    color: #2b2b2b;
+  }
+
+  .input-with-unit {
+    display: flex;
+    flex: 1;
+    max-width: 200px;
+  }
+
+  .input-with-unit input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #d4d0c8;
+    font-size: 1rem;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  .input-with-unit .unit {
+    padding: 0.75rem;
+    background: #f8f7f5;
+    border: 1px solid #d4d0c8;
+    border-left: none;
+    font-family: 'Lato', sans-serif;
+    color: #5a5a5a;
+    min-width: 50px;
+    text-align: center;
+  }
+
+  .button-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .add-btn, .remove-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #d4d0c8;
+    background: #f8f7f5;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .add-btn:hover, .remove-btn:hover {
+    background: #e8e6e0;
+  }
+
+  .calculate-btn {
+    background: #2b2b2b;
+    color: #ffffff;
+    padding: 1rem 2rem;
+    border: none;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+  }
+
+  .calculate-btn:hover {
+    background: #4a4a4a;
+  }
+
+  .results {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #e8e6e0;
+  }
+
+  .results.hidden {
+    display: none;
+  }
+
+  .results h3 {
+    font-size: 1.3rem;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  .result-highlight {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    background: #2b2b2b;
+    color: #ffffff;
+    margin-bottom: 1rem;
+  }
+
+  .result-highlight .result-label {
+    font-family: 'Lato', sans-serif;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .result-highlight .result-value {
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  .calculation-detail {
+    background: #f8f7f5;
+    padding: 1rem;
+    border-left: 3px solid #2b5a8c;
+  }
+
+  .calculation-detail p {
+    margin: 0.5rem 0;
+    color: #4a4a4a;
+  }
+
+  .quick-reference {
+    background: #ffffff;
+    padding: 2rem;
+    border: 1px solid #e8e6e0;
+    margin-bottom: 2rem;
+  }
+
+  .quick-reference h3 {
+    font-size: 1.3rem;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  .quick-reference p {
+    color: #5a5a5a;
+    margin-bottom: 1rem;
+  }
+
+  .quick-reference table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+  }
+
+  .quick-reference th {
+    background: #f8f7f5;
+    padding: 0.75rem;
+    text-align: left;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #2b2b2b;
+  }
+
+  .quick-reference td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #e8e6e0;
+    font-size: 0.95rem;
+  }
+
+  .quick-reference .note {
+    font-style: italic;
+    color: #6a6a6a;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+  }
+
+  .formula-info {
+    background: #f8f7f5;
+    padding: 2rem;
+    border: 1px solid #e8e6e0;
+  }
+
+  .formula-info h3 {
+    font-size: 1.3rem;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  .formula-info code {
+    display: block;
+    background: #ffffff;
+    padding: 1rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    border: 1px solid #d4d0c8;
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+
+  .formula-info p {
+    color: #4a4a4a;
+    margin-bottom: 0.75rem;
+  }
+
+  .formula-info .warning {
+    background: #fffbf3;
+    border-left: 3px solid #a73;
+    padding: 1rem;
+    margin-top: 1rem;
+    color: #6a5a3a;
+  }
+
+  @media (max-width: 768px) {
+    .tool-page {
+      padding: 2rem 1.5rem;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+    }
+
+    .calculator {
+      padding: 1.5rem;
+    }
+
+    .input-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .input-row label {
+      min-width: auto;
+    }
+
+    .input-with-unit {
+      max-width: none;
+      width: 100%;
+    }
+
+    .result-highlight {
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: center;
+    }
+  }
+</style>

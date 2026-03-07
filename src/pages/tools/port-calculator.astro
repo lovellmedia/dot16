@@ -1,0 +1,400 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<BaseLayout 
+  title="Port Length Calculator - Dot16"
+  description="Calculate subwoofer port length for vented enclosures based on box volume, tuning frequency, and port diameter."
+>
+  <Header slot="header" title="Dot16" />
+  
+  <section class="tool-page">
+    <div class="container">
+      <h1>Port Length Calculator</h1>
+      <p class="intro">
+        Calculate the required port length for a vented (bass reflex) enclosure. 
+        Enter your box volume, desired tuning frequency, and port diameter to determine the correct length.
+      </p>
+
+      <div class="calculator">
+        <div class="input-group">
+          <label for="volume">Box Volume</label>
+          <div class="input-with-unit">
+            <input type="number" id="volume" step="0.01" min="0.1" placeholder="2.0">
+            <select id="volumeUnit">
+              <option value="ft3">cubic feet</option>
+              <option value="L">liters</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="tuning">Tuning Frequency (Fb)</label>
+          <div class="input-with-unit">
+            <input type="number" id="tuning" step="1" min="10" max="100" placeholder="35">
+            <span class="unit">Hz</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="portDiameter">Port Diameter</label>
+          <div class="input-with-unit">
+            <input type="number" id="portDiameter" step="0.1" min="1" placeholder="4">
+            <select id="diameterUnit">
+              <option value="in">inches</option>
+              <option value="cm">cm</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="portCount">Number of Ports</label>
+          <input type="number" id="portCount" step="1" min="1" value="1">
+        </div>
+
+        <button onclick="calculatePort()" class="calculate-btn">Calculate Port Length</button>
+
+        <div id="results" class="results hidden">
+          <h3>Results</h3>
+          <div class="result-item">
+            <span class="result-label">Port Length:</span>
+            <span class="result-value" id="portLength">-</span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Port Volume Displacement:</span>
+            <span class="result-value" id="portVolume">-</span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Port Air Velocity @ 100W:</span>
+            <span class="result-value" id="airVelocity">-</span>
+          </div>
+          <p class="warning" id="velocityWarning"></p>
+        </div>
+      </div>
+
+      <div class="formula-info">
+        <h3>Formula</h3>
+        <p>The port length is calculated using the standard Helmholz resonator equation:</p>
+        <code>Lv = (Av × c²) / (Vb × fb² × π²) - (0.732 × √Av)</code>
+        <p>Where:</p>
+        <ul>
+          <li><strong>Lv</strong> = Port length (meters)</li>
+          <li><strong>Av</strong> = Port cross-sectional area (m²)</li>
+          <li><strong>c</strong> = Speed of sound (~343 m/s)</li>
+          <li><strong>Vb</strong> = Box volume (m³)</li>
+          <li><strong>fb</strong> = Tuning frequency (Hz)</li>
+        </ul>
+        <p class="note">The end correction factor accounts for radiation impedance at the port opening.</p>
+      </div>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</BaseLayout>
+
+<script is:inline>
+  function calculatePort() {
+    const volume = parseFloat(document.getElementById('volume').value);
+    const volumeUnit = document.getElementById('volumeUnit').value;
+    const tuning = parseFloat(document.getElementById('tuning').value);
+    const portDiameter = parseFloat(document.getElementById('portDiameter').value);
+    const diameterUnit = document.getElementById('diameterUnit').value;
+    const portCount = parseInt(document.getElementById('portCount').value) || 1;
+
+    if (!volume || !tuning || !portDiameter) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    // Convert to metric
+    let Vb = volume;
+    if (volumeUnit === 'ft3') {
+      Vb = volume * 28.3168; // liters
+    }
+    Vb = Vb / 1000; // Convert liters to cubic meters
+
+    let Dv = portDiameter;
+    if (diameterUnit === 'in') {
+      Dv = Dv * 0.0254; // meters
+    } else {
+      Dv = Dv / 100; // cm to meters
+    }
+
+    // Calculate radius and area for single port
+    const radius = Dv / 2;
+    const Av = Math.PI * radius * radius; // m²
+
+    // Adjust for multiple ports (divide area by count for equivalent single port)
+    const AvTotal = Av * portCount;
+    const AvPerPort = AvTotal / portCount;
+    const radiusPerPort = Math.sqrt(AvPerPort / Math.PI);
+
+    const c = 343; // Speed of sound in m/s
+    const fb = tuning;
+
+    // Calculate port length using Helmholz formula with end correction
+    // Lv = (c² × Av) / (Vb × fb² × 4π) - (1.463 × radius)
+    // Simplified and adjusted for end correction
+    const Lv = ((c * c) * AvPerPort) / (Vb * fb * fb * 4 * Math.PI) - (1.463 * radiusPerPort);
+    const LvInches = Lv / 0.0254;
+    const LvCm = Lv * 100;
+
+    // Calculate port volume displacement
+    const portVolumeM3 = AvPerPort * Lv * portCount;
+    const portVolumeLiters = portVolumeM3 * 1000;
+    const portVolumeFt3 = portVolumeM3 * 35.315;
+
+    // Calculate air velocity at 100W (simplified)
+    // Sd = cone area (assume 12" sub with Sd = 0.048 m² for estimation)
+    const Sd = 0.048; // m² (typical 12" sub)
+    const Xmax = 0.015; // m (15mm typical)
+    const Vd = Sd * Xmax * 2; // Peak displacement volume
+    const power = 100;
+    const displacementRatio = Math.sqrt(power / 100); // Approximate scaling
+    const VdMax = Vd * displacementRatio;
+    const velocity = (VdMax * fb) / AvPerPort; // m/s at tuning frequency
+    const velocityMs = velocity.toFixed(1);
+
+    // Display results
+    document.getElementById('portLength').innerHTML = 
+      `${LvInches.toFixed(2)} inches (${LvCm.toFixed(1)} cm)`;
+    document.getElementById('portVolume').innerHTML = 
+      `${portVolumeLiters.toFixed(2)} L (${portVolumeFt3.toFixed(3)} ft³)`;
+    document.getElementById('airVelocity').innerHTML = 
+      `${velocityMs} m/s`;
+
+    // Velocity warning
+    const warningEl = document.getElementById('velocityWarning');
+    if (velocity > 17) {
+      warningEl.innerHTML = '⚠️ Air velocity is high (>17 m/s). Port noise (chuffing) may occur at high power. Consider using a larger diameter port or multiple ports.';
+      warningEl.className = 'warning error';
+    } else if (velocity > 12) {
+      warningEl.innerHTML = '⚠️ Air velocity is moderate. Some port noise may be audible at high power levels.';
+      warningEl.className = 'warning caution';
+    } else {
+      warningEl.innerHTML = '✓ Air velocity is acceptable.';
+      warningEl.className = 'warning ok';
+    }
+
+    document.getElementById('results').classList.remove('hidden');
+  }
+</script>
+
+<style>
+  .tool-page {
+    padding: 3rem;
+    background: #fdfcfa;
+    min-height: calc(100vh - 200px);
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  .intro {
+    font-size: 1.1rem;
+    color: #5a5a5a;
+    margin-bottom: 2rem;
+    line-height: 1.7;
+  }
+
+  .calculator {
+    background: #ffffff;
+    padding: 2.5rem;
+    border: 1px solid #e8e6e0;
+    margin-bottom: 2rem;
+  }
+
+  .input-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .input-group label {
+    display: block;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #2b2b2b;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .input-with-unit {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .input-with-unit input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #d4d0c8;
+    font-size: 1rem;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  .input-with-unit select,
+  .input-with-unit .unit {
+    padding: 0.75rem;
+    border: 1px solid #d4d0c8;
+    background: #f8f7f5;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    min-width: 120px;
+  }
+
+  .calculate-btn {
+    background: #2b2b2b;
+    color: #ffffff;
+    padding: 1rem 2rem;
+    border: none;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+  }
+
+  .calculate-btn:hover {
+    background: #4a4a4a;
+  }
+
+  .results {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #e8e6e0;
+  }
+
+  .results.hidden {
+    display: none;
+  }
+
+  .results h3 {
+    font-size: 1.3rem;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  .result-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e8e6e0;
+  }
+
+  .result-label {
+    color: #5a5a5a;
+    font-family: 'Lato', sans-serif;
+  }
+
+  .result-value {
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+
+  .warning {
+    margin-top: 1rem;
+    padding: 1rem;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+  }
+
+  .warning.error {
+    background: #fff3f3;
+    color: #c44;
+    border-left: 3px solid #c44;
+  }
+
+  .warning.caution {
+    background: #fffbf3;
+    color: #a73;
+    border-left: 3px solid #a73;
+  }
+
+  .warning.ok {
+    background: #f3fff3;
+    color: #4a4;
+    border-left: 3px solid #4a4;
+  }
+
+  .formula-info {
+    background: #f8f7f5;
+    padding: 2rem;
+    border: 1px solid #e8e6e0;
+  }
+
+  .formula-info h3 {
+    font-size: 1.3rem;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  .formula-info p {
+    color: #4a4a4a;
+    margin-bottom: 1rem;
+  }
+
+  .formula-info code {
+    display: block;
+    background: #ffffff;
+    padding: 1rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    border: 1px solid #d4d0c8;
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+
+  .formula-info ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+  }
+
+  .formula-info li {
+    margin-bottom: 0.5rem;
+    color: #4a4a4a;
+  }
+
+  .formula-info .note {
+    font-style: italic;
+    color: #6a6a6a;
+    font-size: 0.95rem;
+  }
+
+  @media (max-width: 768px) {
+    .tool-page {
+      padding: 2rem 1.5rem;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+    }
+
+    .calculator {
+      padding: 1.5rem;
+    }
+
+    .input-with-unit {
+      flex-direction: column;
+    }
+
+    .input-with-unit select,
+    .input-with-unit .unit {
+      min-width: auto;
+    }
+  }
+</style>

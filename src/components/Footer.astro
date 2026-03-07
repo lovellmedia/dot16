@@ -1,0 +1,35 @@
+---
+const currentYear = new Date().getFullYear();
+const domain = "dot16.org";
+const topicSlug = "vehicle-acoustic-engineering";
+---
+
+<footer>
+  <div class="container">
+    <div>
+      <h4>Dot16 Vehicle Acoustic Engineering</h4>
+      <p>Technical research and resources for car audio acoustic science. Exploring the physics of sound in automotive environments.</p>
+    </div>
+    <div>
+      <h4>Pillar Pages</h4>
+      <ul>
+        <li><a href={`/${topicSlug}/`}>Overview</a></li>
+        <li><a href={`/${topicSlug}/history/`}>History</a></li>
+        <li><a href={`/${topicSlug}/technical-deep-dive/`}>Technical Deep-Dive</a></li>
+        <li><a href={`/${topicSlug}/ontology/`}>Ontology</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Resources</h4>
+      <ul>
+        <li><a href={`/${topicSlug}/trends/`}>Current Trends</a></li>
+        <li><a href={`/${topicSlug}/tools/`}>Tools</a></li>
+        <li><a href={`/${topicSlug}/challenges/`}>Challenges</a></li>
+        <li><a href="/sitemap-index.xml">Sitemap</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © {currentYear} {domain}. All rights reserved.
+  </div>
+</footer>

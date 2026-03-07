@@ -1,0 +1,424 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<BaseLayout 
+  title="Box Volume Calculator - Dot16"
+  description="Calculate subwoofer enclosure net volume accounting for speaker displacement, port volume, and bracing."
+>
+  <Header slot="header" title="Dot16" />
+  
+  <section class="tool-page">
+    <div class="container">
+      <h1>Box Volume Calculator</h1>
+      <p class="intro">
+        Calculate the net internal volume of a subwoofer enclosure accounting for speaker displacement, 
+        port volume, and internal bracing. Enter your external dimensions and displacement values to find the net volume available for acoustic loading.
+      </p>
+
+      <div class="calculator">
+        <h3>External Dimensions</h3>
+        <div class="input-row">
+          <div class="input-group">
+            <label for="width">Width</label>
+            <input type="number" id="width" step="0.1" placeholder="24">
+          </div>
+          <div class="input-group">
+            <label for="height">Height</label>
+            <input type="number" id="height" step="0.1" placeholder="14">
+          </div>
+          <div class="input-group">
+            <label for="depth">Depth</label>
+            <input type="number" id="depth" step="0.1" placeholder="16">
+          </div>
+          <div class="input-group">
+            <label for="dimUnit">Unit</label>
+            <select id="dimUnit">
+              <option value="in">inches</option>
+              <option value="cm">cm</option>
+            </select>
+          </div>
+        </div>
+
+        <h3>Material Thickness</h3>
+        <div class="input-group">
+          <label for="thickness">Panel Thickness</label>
+          <div class="input-with-unit">
+            <input type="number" id="thickness" step="0.125" value="0.75">
+            <select id="thickUnit">
+              <option value="in">inches</option>
+              <option value="cm">cm</option>
+            </select>
+          </div>
+        </div>
+
+        <h3>Displacements</h3>
+        <div class="input-group">
+          <label for="speakerDisp">Speaker Displacement</label>
+          <div class="input-with-unit">
+            <input type="number" id="speakerDisp" step="0.01" value="0.1">
+            <select id="speakerUnit">
+              <option value="ft3">ft³</option>
+              <option value="L">liters</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="portDisp">Port Displacement</label>
+          <div class="input-with-unit">
+            <input type="number" id="portDisp" step="0.01" value="0">
+            <select id="portUnit">
+              <option value="ft3">ft³</option>
+              <option value="L">liters</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="braceDisp">Bracing Displacement</label>
+          <div class="input-with-unit">
+            <input type="number" id="braceDisp" step="0.01" value="0">
+            <select id="braceUnit">
+              <option value="ft3">ft³</option>
+              <option value="L">liters</option>
+            </select>
+          </div>
+        </div>
+
+        <button onclick="calculateVolume()" class="calculate-btn">Calculate Net Volume</button>
+
+        <div id="results" class="results hidden">
+          <h3>Results</h3>
+          <div class="result-item">
+            <span class="result-label">External Volume:</span>
+            <span class="result-value" id="extVolume">-</span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Internal (Gross) Volume:</span>
+            <span class="result-value" id="grossVolume">-</span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Total Displacements:</span>
+            <span class="result-value" id="totalDisp">-</span>
+          </div>
+          <div class="result-item highlight">
+            <span class="result-label">Net Volume:</span>
+            <span class="result-value" id="netVolume">-</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-info">
+        <h3>Calculation Method</h3>
+        <p>The net volume is calculated by:</p>
+        <ol>
+          <li>Converting external dimensions to internal dimensions by subtracting 2× material thickness from each dimension</li>
+          <li>Calculating internal (gross) volume from internal dimensions</li>
+          <li>Subtracting all displacements (speaker, port, bracing) to get net volume</li>
+        </ol>
+        <p class="note">
+          <strong>Net volume</strong> is the critical parameter for enclosure design calculations. 
+          It represents the air volume available to acoustically load the speaker driver.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</BaseLayout>
+
+<script is:inline>
+  function calculateVolume() {
+    const width = parseFloat(document.getElementById('width').value);
+    const height = parseFloat(document.getElementById('height').value);
+    const depth = parseFloat(document.getElementById('depth').value);
+    const dimUnit = document.getElementById('dimUnit').value;
+    
+    const thickness = parseFloat(document.getElementById('thickness').value);
+    const thickUnit = document.getElementById('thickUnit').value;
+    
+    const speakerDisp = parseFloat(document.getElementById('speakerDisp').value) || 0;
+    const speakerUnit = document.getElementById('speakerUnit').value;
+    const portDisp = parseFloat(document.getElementById('portDisp').value) || 0;
+    const portUnit = document.getElementById('portUnit').value;
+    const braceDisp = parseFloat(document.getElementById('braceDisp').value) || 0;
+    const braceUnit = document.getElementById('braceUnit').value;
+
+    if (!width || !height || !depth) {
+      alert('Please enter all external dimensions');
+      return;
+    }
+
+    // Convert everything to inches first
+    let w = width, h = height, d = depth;
+    if (dimUnit === 'cm') {
+      w = w / 2.54;
+      h = h / 2.54;
+      d = d / 2.54;
+    }
+
+    let thick = thickness;
+    if (thickUnit === 'cm') {
+      thick = thick / 2.54;
+    }
+
+    // External volume in cubic inches
+    const extVolumeIn3 = w * h * d;
+    const extVolumeFt3 = extVolumeIn3 / 1728;
+    const extVolumeL = extVolumeFt3 * 28.3168;
+
+    // Internal dimensions (subtract 2× thickness from each dimension)
+    const innerW = w - 2 * thick;
+    const innerH = h - 2 * thick;
+    const innerD = d - 2 * thick;
+
+    if (innerW <= 0 || innerH <= 0 || innerD <= 0) {
+      alert('Material thickness is too large for the given dimensions');
+      return;
+    }
+
+    // Gross (internal) volume
+    const grossVolumeIn3 = innerW * innerH * innerD;
+    const grossVolumeFt3 = grossVolumeIn3 / 1728;
+    const grossVolumeL = grossVolumeFt3 * 28.3168;
+
+    // Convert displacements to cubic feet
+    let speakerFt3 = speakerDisp;
+    if (speakerUnit === 'L') speakerFt3 = speakerDisp / 28.3168;
+    
+    let portFt3 = portDisp;
+    if (portUnit === 'L') portFt3 = portDisp / 28.3168;
+    
+    let braceFt3 = braceDisp;
+    if (braceUnit === 'L') braceFt3 = braceDisp / 28.3168;
+
+    const totalDispFt3 = speakerFt3 + portFt3 + braceFt3;
+    const totalDispL = totalDispFt3 * 28.3168;
+
+    // Net volume
+    const netVolumeFt3 = grossVolumeFt3 - totalDispFt3;
+    const netVolumeL = netVolumeFt3 * 28.3168;
+
+    if (netVolumeFt3 <= 0) {
+      alert('Displacements exceed internal volume. Check your inputs.');
+      return;
+    }
+
+    // Display results
+    document.getElementById('extVolume').innerHTML = 
+      `${extVolumeFt3.toFixed(3)} ft³ (${extVolumeL.toFixed(1)} L)`;
+    document.getElementById('grossVolume').innerHTML = 
+      `${grossVolumeFt3.toFixed(3)} ft³ (${grossVolumeL.toFixed(1)} L)`;
+    document.getElementById('totalDisp').innerHTML = 
+      `${totalDispFt3.toFixed(3)} ft³ (${totalDispL.toFixed(1)} L)`;
+    document.getElementById('netVolume').innerHTML = 
+      `${netVolumeFt3.toFixed(3)} ft³ (${netVolumeL.toFixed(1)} L)`;
+
+    document.getElementById('results').classList.remove('hidden');
+  }
+</script>
+
+<style>
+  .tool-page {
+    padding: 3rem;
+    background: #fdfcfa;
+    min-height: calc(100vh - 200px);
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  .intro {
+    font-size: 1.1rem;
+    color: #5a5a5a;
+    margin-bottom: 2rem;
+    line-height: 1.7;
+  }
+
+  .calculator {
+    background: #ffffff;
+    padding: 2.5rem;
+    border: 1px solid #e8e6e0;
+    margin-bottom: 2rem;
+  }
+
+  .calculator h3 {
+    font-size: 1.1rem;
+    color: #2b2b2b;
+    margin: 1.5rem 0 1rem;
+    font-family: 'Lato', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .calculator h3:first-child {
+    margin-top: 0;
+  }
+
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .input-group {
+    margin-bottom: 1rem;
+  }
+
+  .input-group label {
+    display: block;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #2b2b2b;
+    margin-bottom: 0.5rem;
+  }
+
+  .input-group input,
+  .input-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d4d0c8;
+    font-size: 1rem;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  .input-with-unit {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .input-with-unit input {
+    flex: 1;
+  }
+
+  .input-with-unit select {
+    min-width: 100px;
+  }
+
+  .calculate-btn {
+    background: #2b2b2b;
+    color: #ffffff;
+    padding: 1rem 2rem;
+    border: none;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .calculate-btn:hover {
+    background: #4a4a4a;
+  }
+
+  .results {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #e8e6e0;
+  }
+
+  .results.hidden {
+    display: none;
+  }
+
+  .results h3 {
+    font-size: 1.3rem;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  .result-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e8e6e0;
+  }
+
+  .result-item.highlight {
+    background: #f8f7f5;
+    margin: 0.5rem -1rem;
+    padding: 1rem;
+    border-bottom: none;
+    border-left: 3px solid #2b2b2b;
+  }
+
+  .result-label {
+    color: #5a5a5a;
+    font-family: 'Lato', sans-serif;
+  }
+
+  .result-value {
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+
+  .formula-info {
+    background: #f8f7f5;
+    padding: 2rem;
+    border: 1px solid #e8e6e0;
+  }
+
+  .formula-info h3 {
+    font-size: 1.3rem;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  .formula-info p,
+  .formula-info li {
+    color: #4a4a4a;
+    margin-bottom: 0.75rem;
+  }
+
+  .formula-info ol {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+  }
+
+  .formula-info .note {
+    font-style: italic;
+    color: #6a6a6a;
+    font-size: 0.95rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #ffffff;
+    border-left: 3px solid #2b5a8c;
+  }
+
+  @media (max-width: 768px) {
+    .tool-page {
+      padding: 2rem 1.5rem;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+    }
+
+    .calculator {
+      padding: 1.5rem;
+    }
+
+    .input-row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>
